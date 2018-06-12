@@ -1,0 +1,62 @@
+import requests
+import html5lib
+from bs4 import BeautifulSoup
+from openpyxl import Workbook
+import time
+import pandas as pd
+import numpy as np
+import concurrent.futures
+
+
+
+def reptile(total,sectionid,kind,year):
+        i=0
+        table=[]
+        while i<= int(total):
+                head={'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/66.0.3359.139 Safari/537.36'}
+                line='https://www.591.com.tw/webService-market-1.html?firstRow='
+                page=str(i)
+                last='&totalRows=&type=1&sectionid={sectionid}&kind={kind}&year={year}rderType=desc&orderField=refreshtime'.format(sectionid=sectionid,kind=kind,year=year)
+                real_link=line+page+last
+                res = requests.get( real_link , headers = head)
+                print( real_link)
+                soup = BeautifulSoup(res.text,"html.parser")
+                df = pd.read_html(res.text)
+                table.append(df[0].drop([0,1]))
+
+                i+=20
+                time.sleep(1) 
+        
+              
+        return table
+    
+    
+    
+    
+    
+
+
+
+
+        
+        
+        
+args=[[440,3,1,2018],[700,3,2,2018],[160,3,3,2018],[80,3,4,2018],[100,3,5,2018],[20,3,12,2018]]
+fus=[]
+with concurrent.futures.ThreadPoolExecutor(max_workers=1000) as executor:
+     for g in args:
+          fus.append(executor.submit(reptile,*g ))
+        
+     concurrent.futures.wait(fus)
+     print([f.result() for f in fus])
+         
+        
+        
+        
+        
+        
+        
+        
+        
+        
+        
