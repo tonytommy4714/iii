@@ -19,7 +19,30 @@ def stat_code_compute(x):
     state_code = str(state_code_x)+str(state_code_y)
     return (x,state_code)
 
-
+def status_code_explore(x):
+    import statistics
+    price=[]
+    floorsum=[]
+    for i in x[1]:                          #groupby 後回傳[('553726935', <pyspark.resultiterable.ResultIterable at 0x7fed51a7a048>)]
+        if str(i[0][7])!= '':               #<pyspark.resultiterable.ResultIterable at 0x7fed51a7a048>) 對這個物件做迭代可取額裡面內容
+            price.append(float(i[0][7]))
+        if str(i[0][10]) != ''and "-":        #資料內有遺漏值if 過濾掉這些值 不然會有錯誤
+            floorsum.append(float(i[0][10]))
+        
+      
+    
+    meanprice=str(statistics.mean(price))
+    median_price=str(statistics.median(price))
+    std_price=str(statistics.stdev(price))
+    q3_price=str(statistics.median_high(price))
+    q1_price=str(statistics.median_low( price))
+    
+    meanfloorsum=str(statistics.mean(floorsum))
+    median_floorsum=str(statistics.median(floorsum))
+    std_floorsum=str(statistics.stdev(floorsum))
+    q3_floorsum=str(statistics.median_high(floorsum))
+    q1_floorsum=str(statistics.median_low(floorsum))
+    return (x[0],meanprice,median_price,std_price,q3_price,q1_price,meanfloorsum,median_floorsum,std_floorsum,q3_floorsum,q1_floorsum)
 
 
 
@@ -43,7 +66,17 @@ result=change_rdd.map(stat_code_compute)#運算 state code
 
 group_result=result.groupBy(lambda x:x[1]) #運算出來的state code 做groupby
 
+explore_result=group_result.map(status_code_explore) 
+
+
 for i in group_result.collect():
     print(i)
     
 result.saveAsTextFile("hdfs://localhost/user/cloudera/user/output")
+
+
+try:
+    explore_result.saveAsTextFile("hdfs://localhost/user/cloudera/user/lease_all_2008_mean")
+except:
+    print("no")
+
