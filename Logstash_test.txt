@@ -1,6 +1,7 @@
 input {
   file {
-    path => "/home/iiiedu/Desktop/data/jjj.csv"
+    path => "/home/iiiedu/Desktop/data/kkk.csv"
+   
     start_position => "beginning"
     sincedb_path => "/dev/null"
   }
@@ -8,25 +9,25 @@ input {
 filter {
   csv {
      separator => ","
-     columns => ["dealTime","Usage","Type","Address","Pattern","Floor","floorSum","lat","long","unitPrice"]
-  }
- 
-     mutate{convert => { "dealTime", "text" }}
-     mutate{convert => { "Usage", "text" }}
-     mutate{convert => { "Type", "text" }}
-     mutate{convert => { "Address", "text" }}
-     mutate{convert => { "Pattern", "text" }}
-     mutate{convert => { "Floor", "long" }}
-     mutate{convert => { "floorSum", "long" }}
-     mutate{convert => { "lat", "float" }}
-     mutate{convert => { "long", "float" }}
-     mutate{convert => { "unitPrice", "long" }}
+     columns => ["dealTime","Usage","Type","Address","Pattern","Floor","floorSum","lat","long","unitPrice"]
+      }
+      mutate {
+        convert => {"lat" => "float"}
+        convert => {"long" => "float"}
+        rename => {"lat" => "[location][lat]"} 
+        rename => {"long" => "[location][lon]"}
+    }
+    
+     
+
 }
+  
 output {
   elasticsearch {
-     hosts => "127.0.0.1:9200"
-     index => "rent"
-     document_type => "block"
+     hosts => "localhost:9200"
+     index => "city"
+     document_type => "test1"
+   
   }
-  stdout{}
+  stdout{codec => rubydebug}
 }
