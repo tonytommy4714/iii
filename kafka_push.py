@@ -1,10 +1,7 @@
+import pandas as pd 
+from kafka import KafkaProducer
+import numpy as np
 def kafka_push(table,port,topic):
-
-    import pandas as pd 
-
-    from kafka import KafkaProducer
-
-    import numpy as np
 
     table_array=np.array(table)
 
